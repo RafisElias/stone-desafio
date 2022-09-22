@@ -35,10 +35,7 @@ class SWApi extends Store {
   }
 
   getPlanetById(url) {
-    console.log('url', url);
-    console.log('planets', this.get().planets);
     const planet = this.get().planets.filter(p => p.id === url);
-    console.log(planet[0]);
     return planet[0] || {};
   }
 }
