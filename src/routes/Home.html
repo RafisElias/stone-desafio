@@ -1,0 +1,85 @@
+<AppBarModifier title="Home" />
+
+<Container padding="5px 10px">
+  <h2 class="welcome-text">Bem vindo a consulta das estralas</h2>
+</Container>
+
+<Container padding="5px 10px">
+  <p class="text-base">O que você pode fazer na consulta das estrelas:</p>
+</Container>
+
+<Container>
+  <ol class="list">
+    <li>Buscar informações de um personagem aleatório.</li>
+    <li>Ver Personagens já consultados.</li>
+  </ol>
+</Container>
+
+
+<Container padding="5px 10px ">
+  <Button size="full" on:click="show()" shortcut="1">
+    1 - Buscar Personagem
+  </Button>
+</Container>
+<Container padding="5px 10px ">
+  <Button size="full" on:click="goToCharactersList()" shortcut="2">
+    2 - Personagens já consultados
+  </Button>
+</Container>
+
+<Dialog ref:dialog fullscreen>
+  <LoadingSprite />
+  <h1>Carregando...</h1>
+</Dialog>
+
+<script>
+  import Router from 'svelte-page';
+  import store from '../store.js';
+
+  export default {
+    components: {
+      AppBarModifier: '@mamba/appbar/Modifier.html',
+      Button: '@mamba/button',
+      Dialog: '@mamba/dialog',
+      LoadingSprite: '@mamba/sprite/Loading.html',
+      Container: '@mamba/container',
+    },
+    data() {
+      return {
+        openModal: false,
+      };
+    },
+    methods: {
+      async show() {
+        const randomCharacterId = await store.generateRandomCharacterId();
+        Router.go(`/characters-info/${randomCharacterId}`, { params: { id: randomCharacterId } });
+      },
+      goToCharactersList() {
+        Router.push('/consulted-characters');
+      },
+    },
+  };;
+
+</script>
+
+<style type="text/postcss">
+  .welcome-text {
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .text-base {
+    font-size: 1.25rem;
+    line-height: 1.10;
+  }
+
+  .list {
+    list-style-type: decimal;
+    list-style-position: inside;
+    line-height: 1.15;
+    font-size: 14px;
+    &> *+*{
+      margin-top: .75rem
+    }
+  }
+</style>

@@ -1,0 +1,93 @@
+{
+  "name": "entrevista",
+  "version": "0.0.1",
+  "description": "Desafio técnico",
+  "mamba": {
+    "id": 27498,
+    "appName": "entrevista",
+    "iconPath": "assets/logo.bmp",
+    "appCreationDate": "2022-09-19T17:45:04",
+    "appKey": "11-11-11-11"
+  },
+  "license": "Apache-2.0",
+  "author": "Stone Payments - Mamba Team",
+  "contributors": [],
+  "engines": {
+    "node": ">= 8.11.3",
+    "npm": ">= 5"
+  },
+  "scripts": {
+    "start": "mamba app start",
+    "build": "mamba app build",
+    "build:dev": "mamba app build -d",
+    "build-browser": "mamba app build -t browser",
+    "build-browser:dev": "mamba app build -d -t browser",
+    "serve": "mamba app serve",
+    "analyze": "mamba app analyze",
+    "lint": "mamba app lint",
+    "format": "mamba app format",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "*.{html,svelte}": [
+        "eslint --fix",
+        "stylelint --fix",
+        "git add"
+      ],
+      "*.js": [
+        "prettier --write",
+        "eslint --fix",
+        "git add"
+      ],
+      "*.{pcss,css}": [
+        "stylelint --fix",
+        "git add"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@mamba/cli": "^3.4.2",
+    "@mamba/configs": "^3.5.7",
+    "@mamba/webpack": "^3.7.3",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.8.0",
+    "cross-env": "^5.2.1",
+    "deasync": "^0.1.15",
+    "eslint": "^5.13.0",
+    "http-server": "^0.11.1",
+    "husky": "^2.3.0",
+    "jest": "^24.8.0",
+    "lint-staged": "^8.1.7",
+    "postcss": "^7.0.21",
+    "prettier": "^1.17.1",
+    "quickenv": "0.0.6",
+    "stylelint": "^10.0.1",
+    "svelte-preprocess": "^2.11.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "@mamba/app": "^3.9.3",
+    "@mamba/appbar": "^3.5.8",
+    "@mamba/button": "^3.5.8",
+    "@mamba/container": "^4.1.0",
+    "@mamba/dialog": "^3.5.8",
+    "@mamba/flatlist": "^6.1.0",
+    "@mamba/icon": "^3.5.7",
+    "@mamba/pos": "^3.14.1",
+    "@mamba/printable": "^3.6.4",
+    "@mamba/styles": "^3.5.7",
+    "core-js": "~3.1.2",
+    "immer": "^3.3.0",
+    "svelte": "2.16.1",
+    "svelte-page": "^2.2.1"
+  }
+}

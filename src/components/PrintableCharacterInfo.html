@@ -1,0 +1,122 @@
+<script>
+  import store from '../store.js';
+  import { formatNumber } from '../utils/format.js';
+
+  export default {
+    components: {
+      Container: '@mamba/container',
+    },
+    helpers: {
+      formatNumber,
+    },
+    data() {
+      return {
+        consultedDate: new Intl.DateTimeFormat('pt-br', {
+          dateStyle: 'short',
+          timeStyle: 'medium',
+        }).format(new Date()),
+      };
+    },
+    computed: {
+      planet: ({ homeworld }) => store.get().selectedCharacterPlanet || homeworld,
+    },
+  };
+</script>
+
+
+<Container>
+  <h1 class="warning">Essas Informações devem ser mantidas em segredo!!!</h1>
+  <h2 class="title">Informações sobre: {name}</h2>
+
+  <div class="information">
+    <p class="information__paragraph">
+      <span>Nome completo: </span>
+      <span>{name}</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Gênero: </span>
+      <span>{gender}</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Altura: </span>
+      <span>{height}</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Peso: </span>
+      <span>{mass} kg</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Nascimento: </span>
+      <span>{birthYear}</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Cor dos cabelos:</span>
+      <span>{hairColor}</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Cor dos olhos:</span>
+      <span>{eyeColor}</span>
+    </p>
+    <p class="information__paragraph">
+      <span>Cor da pele:</span>
+      <span>{skinColor}</span>
+    </p>
+  </div>
+</Container>
+
+<section>
+  <Container>
+    <h2 class="title">Informações sobre o planeta:</h2>
+    {#if planet.name}
+      <p class="information__paragraph">
+        <span>Nome:</span>
+        <span>{planet.name}</span>
+      </p>
+      <p class="information__paragraph">
+        <span>Clima:</span>
+        <span>{planet.climate}</span>
+      </p>
+      <p class="information__paragraph">
+        <span>População:</span>
+        <span>{formatNumber(planet.population)}</span>
+      </p>
+      <p class="information__paragraph">
+        <span>Terreno:</span>
+        <span>{planet.terrain}</span>
+      </p>
+    {:else}
+      <p class="information__paragraph">Você não acesso a esse tipo de informação.</p>
+    {/if}
+  </Container>
+</section>
+
+<p class="information__paragraph">
+  <span>Data da consulta:</span>
+  <span>{consultedDate}</span>
+</p>
+
+
+<style type="text/postcss">
+  .warning {
+    font-size: 35px;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 30px;
+    margin-block: 1rem;
+    text-align: center;
+  }
+
+  .information__paragraph {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    > span {
+      flex: 1 1 0;
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
+</style>

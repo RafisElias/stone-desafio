@@ -1,0 +1,171 @@
+<AppBarModifier title="Informações" />
+
+{#if isCheckingCredentials || isLoading }
+<div class="loading-container">
+  <LoadingSprite />
+  <p class="loading-container__text">{!isCheckingCredentials ? 'Carregando informações' : 'Verificando credencias' }</p>
+</div>
+{:else}
+  {#if character.name}
+  <section class="character-info">
+    <Container>
+      <h2>Informações sobre: {character.name}</h2>
+      <p class="text-base">Nome: {character.name}</p>
+      <p class="text-base">Gênero: {translateGender(character.gender)}</p>
+      <p class="text-base">Altura: {formatHeight(character.height)}</p>
+      <p class="text-base">Peso: {character.mass} kg</p>
+      <p class="text-base">Ano de nascimento: {character.birth_year}</p>
+      <p class="text-base">Cor dos cabelos: {character.hair_color}</p>
+      <p class="text-base">Cor dos olhos: {character.eye_color}</p>
+      <p class="text-base">Cor da pele: {character.skin_color}</p>
+    </Container>
+  </section>
+
+  <section class="planet-info">
+    <Container padding="10px 10px 40px 10px">
+      <h2>Informações sobre o planeta:</h2>
+      {#if character.homeworld}
+        {#await getHomeworld(character.homeworld)}
+          <p class="text-base">Carregando dados...</p>
+        {:then response}
+          <p class="text-base">Nome: {response.result.name}</p>
+          <p class="text-base">Clima: {response.result.climate}</p>
+          <p class="text-base">População: {formatNumber(response.result.population)}</p>
+          <p class="text-base">Terreno: {response.result.terrain}</p>
+        {:catch error}
+          <p text-base--access-denied>Erro ao Carregar dados</p>
+        {/await}
+      {:else}
+      <p class="text-base--access-denied">Você não acesso a esse tipo de informação.</p>
+      {/if}
+    </Container>
+  </section>
+  {/if}
+
+  <Button size="full" on:click="checkCredentials()" bottom>
+    Imprimir informações
+  </Button>
+{/if}
+
+
+<Popup isOpen={showWarningPopup}>
+  <p class="warning">Tivemos um problema ao autenticar suas credencias...</p>
+</Popup>
+
+<Printable ref:printCharacterInfo>
+  <PrintableCharacterInfo
+    name={character.name}
+    gender={translateGender(character.gender)}
+    height={formatHeight(character.height)}
+    mass={character.mass}
+    birthYear={character.birth_year}
+    hairColor={character.hair_color}
+    eyeColor={character.eye_color}
+    skinColor={character.skin_color}
+    homeworld={character.homeworld}
+  />
+</Printable>
+
+<script>
+  import Router from 'svelte-page';
+  import Payment from '@mamba/pos/api/payment.js';
+  import { getStarWarsCharacterById, getCharacterHomeworld } from '../api/swapi.js';
+  import { translateGender ,formatHeight ,formatNumber } from '../utils/format.js';
+
+  export default {
+    components: {
+      AppBarModifier: '@mamba/appbar/Modifier.html',
+      LoadingSprite: '@mamba/sprite/Loading.html',
+      Container: '@mamba/container',
+      Button: '@mamba/button',
+      Printable: '@mamba/printable',
+      Popup: '@mamba/dialog/Popup.html',
+      PrintableCharacterInfo: '../components/PrintableCharacterInfo.html',
+    },
+    helpers: {
+      translateGender,
+      formatHeight,
+      formatNumber,
+    },
+    data() {
+      return {
+        isLoading: true,
+        character: {},
+        isCheckingCredentials: false,
+        showWarningPopup: false,
+        getHomeworld: (homeworld) => getCharacterHomeworld(homeworld),
+      };
+    },
+    async oncreate() {
+      const context = Router.getContext();
+      const characterId = context.page.prevContext.params.id;
+      const { result, error } = await getStarWarsCharacterById(characterId);
+      if (!error) {
+        this.set({ character: result });
+      }
+      this.set({ isLoading: false });
+    },
+    methods: {
+      async checkCredentials() {
+        this.set({ isCheckingCredentials: true });
+        await setTimeout(async () => {
+          try {
+            await Payment.pay({
+              amount: 500,
+              editable_amount: false,
+              min_installments: 1,
+              max_installments: 3,
+              order_id: 21,
+            });
+            this.set({ isCheckingCredentials: false });
+            this.refs.printCharacterInfo.print();
+          } catch (error) {
+            this.set({ isCheckingCredentials: false });
+            this.set({ showWarningPopup: true });
+          }
+        }, 1000);
+      },
+    },
+  };
+</script>
+
+
+<style type="text/postcss">
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    place-content: center;
+    place-items: center;
+    &__text {
+      font-size: 22px;
+      text-align: center;
+      text-transform: capitalize;
+      line-height: 1.10;
+    }
+  }
+
+  .warning {
+    font-size: 20px;
+    text-align: center;
+    line-height: 1.15;
+    padding-bottom: 12px;
+  }
+
+  .character-info, .planet-info {
+    p + p {
+      margin-top: 8px;
+    }
+  }
+
+  .text-base {
+    font-size: 1.25rem;
+    line-height: 1.10;
+
+    &--access-denied {
+      font-size: 1.12rem;
+      color: red;
+      text-align: center;
+    }
+  }
+</style>

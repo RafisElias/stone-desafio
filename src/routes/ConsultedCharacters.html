@@ -1,0 +1,37 @@
+<script>
+  import Router from 'svelte-page';
+  import { FlatList, DefaultRow } from '@mamba/flatlist/index.js';
+  import store from '../store.js';
+
+  export default {
+    components: {
+      AppBarModifier: '@mamba/appbar/Modifier.html',
+      FlatList,
+    },
+    helpers: {
+      DefaultRow,
+    },
+    data() {
+      return {
+        characters: store.get().characters.map(character => ({
+          label: {
+            value: `${character.name}`,
+            characterId: character.characterId,
+            description: `Consultado as ${new Intl.DateTimeFormat('pt-br', {
+              dateStyle: 'short',
+              timeStyle: 'short',
+            }).format(new Date(character.addAt))}`,
+          },
+          onSelected: ({ data }) => {
+            const { characterId } = data.label;
+            Router.go(`/characters-info/${characterId}`, { params: { id: characterId } });
+          },
+        })),
+      };
+    },
+  };
+</script>
+
+<AppBarModifier title="Personagens consultados" />
+
+<FlatList data={characters} renderItem={DefaultRow} />
