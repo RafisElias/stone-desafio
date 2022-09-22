@@ -9,6 +9,5 @@ export default {
   '/consulted-characters': ConsultedCharacters,
   '/characters-info/:id': {
     component: CharacterInfo,
-    data: { name: 'Text name' },
   },
 };
