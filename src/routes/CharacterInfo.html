@@ -25,16 +25,16 @@
     <Container padding="10px 10px 40px 10px">
       <h2>Informações sobre o planeta:</h2>
       {#if character.homeworld}
-        {#await getHomeworld(character.homeworld)}
+        {#if isLoadingPlanet}
           <p class="text-base">Carregando dados...</p>
-        {:then response}
-          <p class="text-base">Nome: {response.result.name}</p>
-          <p class="text-base">Clima: {response.result.climate}</p>
-          <p class="text-base">População: {formatNumber(response.result.population)}</p>
-          <p class="text-base">Terreno: {response.result.terrain}</p>
-        {:catch error}
+        {:elseif planet.name && !isLoadingPlanet}
+          <p class="text-base">Nome: {planet.name}</p>
+          <p class="text-base">Clima: {planet.climate}</p>
+          <p class="text-base">População: {formatNumber(planet.population)}</p>
+          <p class="text-base">Terreno: {planet.terrain}</p>
+        {:else}
           <p text-base--access-denied>Erro ao Carregar dados</p>
-        {/await}
+        {/if}
       {:else}
       <p class="text-base--access-denied">Você não acesso a esse tipo de informação.</p>
       {/if}
@@ -53,17 +53,22 @@
 </Popup>
 
 <Printable ref:printCharacterInfo>
-  <PrintableCharacterInfo
-    name={character.name}
-    gender={translateGender(character.gender)}
-    height={formatHeight(character.height)}
-    mass={character.mass}
-    birthYear={character.birth_year}
-    hairColor={character.hair_color}
-    eyeColor={character.eye_color}
-    skinColor={character.skin_color}
-    homeworld={character.homeworld}
-  />
+  {#if character.name}
+    <PrintableCharacterInfo
+      name={character.name}
+      gender={translateGender(character.gender)}
+      height={formatHeight(character.height)}
+      mass={character.mass}
+      birthYear={character.birth_year}
+      hairColor={character.hair_color}
+      eyeColor={character.eye_color}
+      skinColor={character.skin_color}
+      planetName={planet.name}
+      planetClimate={planet.climate}
+      planetPopulation={planet.population}
+      planetTerrain={planet.terrain}
+    />
+  {/if}
 </Printable>
 
 <script>
@@ -90,10 +95,11 @@
     data() {
       return {
         isLoading: true,
+        isLoadingPlanet: false,
         character: {},
+        planet: {},
         isCheckingCredentials: false,
         showWarningPopup: false,
-        getHomeworld: (homeworld) => getCharacterHomeworld(homeworld),
       };
     },
     async oncreate() {
@@ -102,10 +108,24 @@
       const { result, error } = await getStarWarsCharacterById(characterId);
       if (!error) {
         this.set({ character: result });
+        if (result.homeworld) {
+          this.loadPlanet(result.homeworld);
+        }
       }
       this.set({ isLoading: false });
     },
     methods: {
+      async loadPlanet(url) {
+        this.set({ isLoadingPlanet: true });
+        const {
+          result: planetResult,
+          error: planetError,
+        } = await getCharacterHomeworld(url);
+        if(!planetError) {
+          this.set({ planet: planetResult });
+        }
+        this.set({ isLoadingPlanet: false });
+      },
       async checkCredentials() {
         this.set({ isCheckingCredentials: true });
         await setTimeout(async () => {

@@ -30,10 +30,6 @@ class SWApi extends Store {
     this.set({ planets });
   }
 
-  setCharacterPlanet(planet) {
-    this.set({ selectedCharacterPlanet: planet });
-  }
-
   getPlanetById(url) {
     const planet = this.get().planets.filter(p => p.id === url);
     return planet[0] || {};
@@ -42,7 +38,6 @@ class SWApi extends Store {
 
 export const INITIAL_DATA = {
   selectedCharacterId: '',
-  selectedCharacterPlanet: {},
   characters: [],
   planets: [],
 };

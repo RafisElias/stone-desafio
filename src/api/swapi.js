@@ -27,9 +27,7 @@ export async function getCharacterHomeworld(url) {
   const hasDuplicateHomeworld = store
     .get()
     .planets.filter(planet => planet.id === url);
-
   if (hasDuplicateHomeworld.length > 0) {
-    store.setCharacterPlanet(hasDuplicateHomeworld[0]);
     return { result: hasDuplicateHomeworld[0] };
   }
 
@@ -37,9 +35,8 @@ export async function getCharacterHomeworld(url) {
     const response = await fetch(url);
     const result = await response.json();
     store.addPlanete(result);
-    store.setCharacterPlanet(result);
-    return { result };
+    return { result, error: null };
   } catch (error) {
-    throw error;
+    return { result: {}, error };
   }
 }

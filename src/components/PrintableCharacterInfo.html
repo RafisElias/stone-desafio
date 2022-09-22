@@ -1,5 +1,4 @@
 <script>
-  import store from '../store.js';
   import { formatNumber } from '../utils/format.js';
 
   export default {
@@ -16,9 +15,6 @@
           timeStyle: 'medium',
         }).format(new Date()),
       };
-    },
-    computed: {
-      planet: ({ homeworld }) => store.get().selectedCharacterPlanet || homeworld,
     },
   };
 </script>
@@ -67,22 +63,22 @@
 <section>
   <Container>
     <h2 class="title">Informações sobre o planeta:</h2>
-    {#if planet.name}
+    {#if planetName}
       <p class="information__paragraph">
         <span>Nome:</span>
-        <span>{planet.name}</span>
+        <span>{planetName}</span>
       </p>
       <p class="information__paragraph">
         <span>Clima:</span>
-        <span>{planet.climate}</span>
+        <span>{planetClimate}</span>
       </p>
       <p class="information__paragraph">
         <span>População:</span>
-        <span>{formatNumber(planet.population)}</span>
+        <span>{formatNumber(planetPopulation)}</span>
       </p>
       <p class="information__paragraph">
         <span>Terreno:</span>
-        <span>{planet.terrain}</span>
+        <span>{planetTerrain}</span>
       </p>
     {:else}
       <p class="information__paragraph">Você não acesso a esse tipo de informação.</p>
